@@ -1,0 +1,8 @@
+--- 
+title: "R Programming for Statistical Analysis"
+author: "Hammed Akande"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# Welcome
