@@ -3,7 +3,7 @@
 Instructions
 To know if you have git or not
 
-Go to terminal, type "git" (without quotation)
+Go to terminal, type "git" (without quotation).
 If you don't have git, download and install it
 Go to your github profile, settings, navigate to SSH/GPG keys, give it title and enter RSA Key (generate this key from Rstudio, under tools>global options> Git/SVN> create RSA Key, view the public key and copy it to github account and paste there). Save the SSH keys
 Start RStudio>New project>Version control> paste the cloned url Edit index, bookdown, output
