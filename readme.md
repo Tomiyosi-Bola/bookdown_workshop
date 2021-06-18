@@ -44,6 +44,8 @@ git commit git push -u origin master git push -f origin master (force changes to
 To get back to the github repo, use the code : usethis::browse_github().
 
 
+PS: If you use my template here, I will appreciate if you acknowledge it when building your book. You could write a line or two, such as - This book was developed using the template [available here version](https://github.com/drhammed/bookdown_workshop)
+
 
 Some helpful resources while building this book - 
 
