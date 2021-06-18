@@ -6,3 +6,5 @@ site: bookdown::bookdown_site
 ---
 
 # Welcome
+
+Thanks for your interest in R Programming for statistical analysis. This book is intended to serve as a guide to learning R. Good thing is that the book is (and will be) FREE. So, whether you are attending the workshop live or not, you can always consult this book later on for reference. Please feel free to contribute to this open source project if you would want to add or correct the book. 
