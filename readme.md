@@ -1,15 +1,29 @@
 # Readme file for this bookdown 
 
 Instructions
+
 To know if you have git or not
 
 Go to terminal, type "git" (without quotation).
 If you don't have git, download and install it
 Go to your github profile, settings, navigate to SSH/GPG keys, give it title and enter RSA Key (generate this key from Rstudio, under tools>global options> Git/SVN> create RSA Key, view the public key and copy it to github account and paste there). Save the SSH keys
-Start RStudio>New project>Version control> paste the cloned url Edit index, bookdown, output
 
-then render the book,
+Now, 
 
+1. Download this template
+2. Set your github settings and page.
+3. Clone the repo code
+4. Load your Rstudio, create a new project> Version control> paste the cloned url
+3. Edit the _bookdown, _output, and index and save them.
+4. Once you're done editing, then render the book,
+
+## How to create bookdown without using template
+
+1. Create a repository on github, clone it and repeat number 4 under instructions (opening Rstudio)
+2. Create README.md file in RStudio and edit. Add index.Rmd, create and edit _bookdown.yml and _output.yml in RStudio
+3. To add more chapters , create empty R Markdown and save it accordingly. N.B- Index is the 1st chapter.
+
+Once you're done, render the book, commit and push to github and voila- you're done.
 
 ### Render the book
 
@@ -23,9 +37,13 @@ then render the book,
 
 (You will need to repeat steps 2 and 4 every time you wish to update the book online.)
 
+
+## If you're using the terminal command
 git commit git push -u origin master git push -f origin master (force changes to the server with the local repo)
 
-To get back to the github repo, use the code : usethis::browse_github()
+To get back to the github repo, use the code : usethis::browse_github().
+
+
 
 Some helpful resources while building this book - 
 
