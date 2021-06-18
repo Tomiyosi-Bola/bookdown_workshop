@@ -27,7 +27,7 @@ git commit git push -u origin master git push -f origin master (force changes to
 
 To get back to the github repo, use the code : usethis::browse_github()
 
-Reference
+Some helpful resources while building this book - 
 
-1. Some helpful resources for building this book - https://github.com/jtr13/bookdown-template
+1. https://github.com/jtr13/bookdown-template
 2. You may consult the official guide to bookdown: https://bookdown.org/yihui/bookdown
