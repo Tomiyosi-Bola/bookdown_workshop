@@ -4,7 +4,8 @@
 1. Installing RStudio, 
 2. Installing and loading Packages
 
-![R Layout_1](C:/Users/drham/Desktop/R Workshop- Summer 2020/InstallingR/R_layout1.jpg)
+![R Layout_1](C:/Users/drham/Desktop/R Workshop- Summer 2020/InstallingR/R_layout1.JPG)
+
 
 ![R Layout_2](C:/Users/drham/Desktop/R Workshop- Summer 2020/InstallingR/R_layout2.jpg)
 
