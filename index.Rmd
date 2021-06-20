@@ -12,3 +12,5 @@ Thanks for your interest in R Programming for statistical analysis. This is a th
 
 
 This book is intended to serve as a guide to learning R. Good thing is that the book is (and will be) FREE. So, whether you are attending the workshop live or not, you can always consult this book later on for reference. Please feel free to contribute to this open source project if you would want to add or correct the book. You can submit a pull request on Github or send a the corrections (for example, in R Markdown) and we update the book. 
+
+As this is only for 3days and limited with time, this workshop will only introduce you to basic coding and statistics and by no means exhaustive. For a more detailed analysis, please refer to online resources or contact any of the workshop facilitators to discuss better. 
