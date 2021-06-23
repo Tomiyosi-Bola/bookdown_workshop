@@ -20,5 +20,5 @@ To download R Studio, please visit this website (https://www.rstudio.com/product
 
 Once you install R Studio, you can open it, and voila- welcome to the world of programming in R. 
 
-That is all for all now. If you do not get everything now- don't worry, I will run through it again during the workshop. The aim of giving you this earlier is to fast-track the process. Feel free to ask questions about the installation on slack or during the workshop- I will be glad to answer.
+That is all for all now. If you do not get everything now- don't worry, I will run through it again during the workshop. The aim of giving you this early is to fast-track the process. Feel free to ask questions about the installation on slack or during the workshop- I will be glad to answer.
  
