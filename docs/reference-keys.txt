@@ -1,5 +1,7 @@
 welcome
 installing-rrstudio
+to-download-r
+to-download-r-studio
 data-structure-and-basic-progamming-in-rstudio
 data-visualization
 basic-statistical-analysis

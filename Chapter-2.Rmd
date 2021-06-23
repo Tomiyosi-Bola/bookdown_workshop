@@ -8,13 +8,13 @@
 
 Before you start programming in R, you will need to download and install R and RStudio on your computer. R is the programming language used for statistical analysis. R Studio is an Integrated Development Environment (IDE) and a Graphical User Interface (GUI) that allows for easy programming in R. It is important to note that you can use R without RStudio. However, you can not use RStudio without R. So, I encourage you to download both.
 
-# To download R
+## To download R
 
 R is hosted on the Comprehensive R Archive Network (CRAN) website (https://cran.r-project.org/). Once you are on the CRAN website, you would see three different links to download R. Please consider your computer operating system and select whichever best describes it. For example, if you're using a Windows computer, please click on R for windows. If this is your first time installing R and you have not used R before, please click on the 1st link you see ("base"- Install R for the first time); otherwise, update your R (if necessary) or download R Studio (see below for a guide on how to do this). If you're using Mac or Linus, follow the same procedure on the CRAN website to download and install R. 
 
 Once you successfully install R, then you can download R studio. 
 
-# To download R Studio
+## To download R Studio
 
 To download R Studio, please visit this website (https://www.rstudio.com/products/rstudio/download/). Once you click on that link, download the R Studio version recommended for your computer and install it. 
 
