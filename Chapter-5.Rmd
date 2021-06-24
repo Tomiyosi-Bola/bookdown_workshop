@@ -37,7 +37,7 @@ So for our analysis, we want to compare phase shifts in the circadian rhytm of m
 
 ```{r}
 
-Circadian <- read.csv(file.choose())
+Circadian <- read.csv(file.choose()) # Load the csv named "Circadian"
 
 
 # Let's check what's in our data
@@ -220,7 +220,7 @@ Hypothetically, we would expect that the survival of Sclerophrys perreti depends
 ```{r}
 
 
-Perret = read.csv(file.choose(), header = TRUE)
+Perret = read.csv(file.choose(), header = TRUE) # Load the csv file named "AkandeData"
 
 # ANOVA TEST
 Perret_anova <- lm( Call ~ Predator*Survey, data=Perret) 
