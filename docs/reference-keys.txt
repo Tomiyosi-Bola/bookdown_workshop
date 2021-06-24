@@ -5,5 +5,8 @@ to-download-r-studio
 data-structure-and-basic-progamming-in-rstudio
 data-visualization
 basic-statistical-analysis
+analysis-of-variance-anova
+one-way-anova
+two-way-anova
 species-distribution-modeling
 resources-and-references
