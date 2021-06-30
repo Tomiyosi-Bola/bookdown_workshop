@@ -37,6 +37,8 @@ So for our analysis, we want to compare phase shifts in the circadian rhytm of m
 
 ```{r}
 
+
+
 Circadian <- read.csv(file.choose()) # Load the csv named "Circadian"
 
 
@@ -47,6 +49,7 @@ View(Circadian)
 # or use the "dplyr" package to randomly print 10 observations
 
 library(dplyr)
+
 
 
 dplyr::sample_n(Circadian, 10)
@@ -87,6 +90,9 @@ group_by(Circadian, treatment) %>%
 
 ```
 
+
+
+
 Also, you may want to even visualize this data and see how it looks. Let's install a package called "ggpubr" (which is from ggplot2 and used for publications mostly, hence the name "ggpubr")
 
 ```{r}
@@ -109,6 +115,7 @@ ANOVA TEST
 ```{r}
 
 Circadian_anova <- lm( shift ~ treatment, data=Circadian) 
+Circadian_anova
 
 anova(Circadian_anova)
 
@@ -138,7 +145,7 @@ It is important to check all assumptions. So, we need to check all assumptions o
 plot(Circadian_anova, 1)
 
 leveneTest(shift ~ factor(treatment), data=Circadian)
-# If you run this directly, you shold get error message (unless you have installed the package containing the "levene")
+# If you run this directly, you should get error message (unless you have installed the package containing the "levene")
 
 install.packages(c("openxlsx", "car", dependecies=TRUE))
 library(car)
@@ -177,8 +184,7 @@ Lastly,
 Since the ANOVA test is significant, you may want to compute the Tukey test to check for pairwise-comparison between the means of groups
 
 ```{r}
-# Compute the ANOVA
-
+# Compute the Tukey result
 
 
 TukeyHSD(Circadian.aov) # Turkey will not accept anova generated from "lm" function. So use the aov here.
@@ -186,7 +192,6 @@ TukeyHSD(Circadian.aov) # Turkey will not accept anova generated from "lm" funct
 # You can see that both eyes-control and knee-eyes are both significant (check the p-value) 
 
 ```
-
 
 Also, maybe you try the Pairwise-test (not compulsory though)
 
@@ -200,6 +205,31 @@ pairwise.t.test(Circadian$shift, Circadian$treatment,
                  p.adjust.method = "BH")
 
 # The BH means that- adjust the p-values by the Benjamini-Hochberg method.
+
+
+```
+
+
+
+For question that came up in class (about printing your output to your report using "broom" package). Let's use this code. 
+
+Assuming we want to print our Tukey result (of course, you can do that for any output), follow the code below:
+
+```{r}
+install.packages('kableExtra')
+library(kableExtra)
+library(broom) # to tidy statistical models into data frames and for easy export
+
+Tukey_output = TukeyHSD(Circadian.aov)
+
+tidy(Tukey_output)  # Tidy it
+
+Tidy_tukey = tidy(Tukey_output)  # save it as data frame to "kable" it out
+
+
+kable(Tidy_tukey, "html") %>% 
+  kable_styling("striped", full_width = F) %>% 
+  add_header_above()
 
 
 ```
@@ -288,5 +318,5 @@ Perret_summary%>%
 
 ```
 
+The end of ANOVA test.
 
-```

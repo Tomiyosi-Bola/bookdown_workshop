@@ -24,7 +24,7 @@
 <meta name="author" content="Hammed Akande, Jeff Sauer, Abimbola Ogungbire, Tomiyosi Bola" />
 
 
-<meta name="date" content="2021-06-24" />
+<meta name="date" content="2021-06-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,6 +53,8 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 
 
 <style type="text/css">
@@ -203,18 +205,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb2-10"><a href="basic-statistical-analysis.html#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb2-11"><a href="basic-statistical-analysis.html#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-12"><a href="basic-statistical-analysis.html#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="basic-statistical-analysis.html#cb2-13" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">sample_n</span>(Circadian, <span class="dv">10</span>)</span></code></pre></div>
+<span id="cb2-13"><a href="basic-statistical-analysis.html#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="basic-statistical-analysis.html#cb2-14" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">sample_n</span>(Circadian, <span class="dv">10</span>)</span></code></pre></div>
 <pre><code>##    treatment shift
-## 1       knee -1.61
+## 1    control -0.60
 ## 2       eyes -1.48
-## 3       knee -0.96
+## 3       knee  0.73
 ## 4    control  0.20
-## 5       knee  0.31
-## 6       knee  0.03
-## 7    control -0.60
-## 8    control -0.37
-## 9       eyes -1.52
-## 10   control -0.64</code></pre>
+## 5    control -1.27
+## 6    control -0.68
+## 7       knee  0.31
+## 8       eyes -1.52
+## 9       knee -0.96
+## 10      eyes -2.04</code></pre>
 <p>As you can see, this is a one-way factorial design. It has only one factor (the column treatment). Different treatments represents the levels in that factor and ideally are always ordered alphabetically. If you want to check the levels in your data, you can use the code below</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="basic-statistical-analysis.html#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">levels</span>(Circadian<span class="sc">$</span>treatment)</span></code></pre></div>
 <pre><code>## NULL</code></pre>
@@ -240,19 +243,28 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 2 eyes          7 -1.55  0.706
 ## 3 knee          7 -0.336 0.791</code></pre>
 <p>Also, you may want to even visualize this data and see how it looks. Let’s install a package called “ggpubr” (which is from ggplot2 and used for publications mostly, hence the name “ggpubr”)</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="basic-statistical-analysis.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(ggpubr)) {<span class="fu">install.packages</span>(<span class="st">&quot;ggpubr&quot;</span>); <span class="fu">library</span>(ggpubr)}</span>
-<span id="cb10-2"><a href="basic-statistical-analysis.html#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-3"><a href="basic-statistical-analysis.html#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-4"><a href="basic-statistical-analysis.html#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggboxplot</span>(Circadian, <span class="at">x =</span> <span class="st">&quot;treatment&quot;</span>, <span class="at">y =</span> <span class="st">&quot;shift&quot;</span>, </span>
-<span id="cb10-5"><a href="basic-statistical-analysis.html#cb10-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&quot;treatment&quot;</span>, <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">&quot;#00AFBB&quot;</span>, <span class="st">&quot;#E7B800&quot;</span>, <span class="st">&quot;#FC4E07&quot;</span>),</span>
-<span id="cb10-6"><a href="basic-statistical-analysis.html#cb10-6" aria-hidden="true" tabindex="-1"></a>          <span class="at">order =</span> <span class="fu">c</span>(<span class="st">&quot;control&quot;</span>, <span class="st">&quot;eyes&quot;</span>, <span class="st">&quot;knee&quot;</span>),</span>
-<span id="cb10-7"><a href="basic-statistical-analysis.html#cb10-7" aria-hidden="true" tabindex="-1"></a>          <span class="at">ylab =</span> <span class="st">&quot;Shift&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Treatment&quot;</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="basic-statistical-analysis.html#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span>(<span class="sc">!</span><span class="fu">require</span>(ggpubr)) {<span class="fu">install.packages</span>(<span class="st">&quot;ggpubr&quot;</span>); <span class="fu">library</span>(ggpubr)}</span></code></pre></div>
+<pre><code>## Loading required package: ggpubr</code></pre>
+<pre><code>## Warning: package &#39;ggpubr&#39; was built under R version 4.0.5</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.0.5</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="basic-statistical-analysis.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggboxplot</span>(Circadian, <span class="at">x =</span> <span class="st">&quot;treatment&quot;</span>, <span class="at">y =</span> <span class="st">&quot;shift&quot;</span>, </span>
+<span id="cb15-2"><a href="basic-statistical-analysis.html#cb15-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">color =</span> <span class="st">&quot;treatment&quot;</span>, <span class="at">palette =</span> <span class="fu">c</span>(<span class="st">&quot;#00AFBB&quot;</span>, <span class="st">&quot;#E7B800&quot;</span>, <span class="st">&quot;#FC4E07&quot;</span>),</span>
+<span id="cb15-3"><a href="basic-statistical-analysis.html#cb15-3" aria-hidden="true" tabindex="-1"></a>          <span class="at">order =</span> <span class="fu">c</span>(<span class="st">&quot;control&quot;</span>, <span class="st">&quot;eyes&quot;</span>, <span class="st">&quot;knee&quot;</span>),</span>
+<span id="cb15-4"><a href="basic-statistical-analysis.html#cb15-4" aria-hidden="true" tabindex="-1"></a>          <span class="at">ylab =</span> <span class="st">&quot;Shift&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;Treatment&quot;</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
 <p>Now let’s check our one-way ANOVA.</p>
 <p>ANOVA TEST</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="basic-statistical-analysis.html#cb11-1" aria-hidden="true" tabindex="-1"></a>Circadian_anova <span class="ot">&lt;-</span> <span class="fu">lm</span>( shift <span class="sc">~</span> treatment, <span class="at">data=</span>Circadian) </span>
-<span id="cb11-2"><a href="basic-statistical-analysis.html#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="basic-statistical-analysis.html#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(Circadian_anova)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="basic-statistical-analysis.html#cb16-1" aria-hidden="true" tabindex="-1"></a>Circadian_anova <span class="ot">&lt;-</span> <span class="fu">lm</span>( shift <span class="sc">~</span> treatment, <span class="at">data=</span>Circadian) </span>
+<span id="cb16-2"><a href="basic-statistical-analysis.html#cb16-2" aria-hidden="true" tabindex="-1"></a>Circadian_anova</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = shift ~ treatment, data = Circadian)
+## 
+## Coefficients:
+## (Intercept)  treatment.L  treatment.Q  
+##    -0.73196     -0.01907      1.00363</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="basic-statistical-analysis.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(Circadian_anova)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: shift
@@ -262,8 +274,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Another method to calculate ANOVA using the aov function</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="basic-statistical-analysis.html#cb13-1" aria-hidden="true" tabindex="-1"></a>Circadian.aov <span class="ot">&lt;-</span> <span class="fu">aov</span>(shift <span class="sc">~</span> treatment, <span class="at">data =</span> Circadian)</span>
-<span id="cb13-2"><a href="basic-statistical-analysis.html#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Circadian.aov)</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="basic-statistical-analysis.html#cb20-1" aria-hidden="true" tabindex="-1"></a>Circadian.aov <span class="ot">&lt;-</span> <span class="fu">aov</span>(shift <span class="sc">~</span> treatment, <span class="at">data =</span> Circadian)</span>
+<span id="cb20-2"><a href="basic-statistical-analysis.html#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Circadian.aov)</span></code></pre></div>
 <pre><code>##             Df Sum Sq Mean Sq F value  Pr(&gt;F)   
 ## treatment    2  7.224   3.612   7.289 0.00447 **
 ## Residuals   19  9.415   0.496                   
@@ -274,23 +286,23 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol style="list-style-type: decimal">
 <li>Test for homogeneity</li>
 </ol>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="basic-statistical-analysis.html#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Circadian_anova, <span class="dv">1</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="basic-statistical-analysis.html#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(shift <span class="sc">~</span> <span class="fu">factor</span>(treatment), <span class="at">data=</span>Circadian)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="basic-statistical-analysis.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Circadian_anova, <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="basic-statistical-analysis.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(shift <span class="sc">~</span> <span class="fu">factor</span>(treatment), <span class="at">data=</span>Circadian)</span></code></pre></div>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
 ##       Df F value Pr(&gt;F)
 ## group  2  0.1586 0.8545
 ##       19</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="basic-statistical-analysis.html#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you run this directly, you shold get error message (unless you have installed the package containing the &quot;levene&quot;)</span></span>
-<span id="cb18-2"><a href="basic-statistical-analysis.html#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="basic-statistical-analysis.html#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;openxlsx&quot;</span>, <span class="st">&quot;car&quot;</span>, <span class="at">dependecies=</span><span class="cn">TRUE</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="basic-statistical-analysis.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If you run this directly, you should get error message (unless you have installed the package containing the &quot;levene&quot;)</span></span>
+<span id="cb25-2"><a href="basic-statistical-analysis.html#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-3"><a href="basic-statistical-analysis.html#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;openxlsx&quot;</span>, <span class="st">&quot;car&quot;</span>, <span class="at">dependecies=</span><span class="cn">TRUE</span>))</span></code></pre></div>
 <pre><code>## Error in install.packages : Updating loaded packages</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="basic-statistical-analysis.html#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb20-2"><a href="basic-statistical-analysis.html#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="basic-statistical-analysis.html#cb20-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="basic-statistical-analysis.html#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Now run your levene test</span></span>
-<span id="cb20-5"><a href="basic-statistical-analysis.html#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="basic-statistical-analysis.html#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(shift <span class="sc">~</span> <span class="fu">factor</span>(treatment), <span class="at">data=</span>Circadian) <span class="co"># see that the P value is &gt; 0.05, there is no evidence to reject the H0 (they have the same variance)</span></span></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="basic-statistical-analysis.html#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb27-2"><a href="basic-statistical-analysis.html#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="basic-statistical-analysis.html#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="basic-statistical-analysis.html#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Now run your levene test</span></span>
+<span id="cb27-5"><a href="basic-statistical-analysis.html#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="basic-statistical-analysis.html#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(shift <span class="sc">~</span> <span class="fu">factor</span>(treatment), <span class="at">data=</span>Circadian) <span class="co"># see that the P value is &gt; 0.05, there is no evidence to reject the H0 (they have the same variance)</span></span></code></pre></div>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
 ##       Df F value Pr(&gt;F)
 ## group  2  0.1586 0.8545
@@ -298,25 +310,24 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ol start="2" style="list-style-type: decimal">
 <li>Test for Normality</li>
 </ol>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="basic-statistical-analysis.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Circadian_anova, <span class="at">which=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="basic-statistical-analysis.html#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This normality assumption can be further confirmed using the Shapiro normality test.</span></span>
-<span id="cb23-2"><a href="basic-statistical-analysis.html#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="basic-statistical-analysis.html#cb23-3" aria-hidden="true" tabindex="-1"></a>circadian_residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="at">object =</span> Circadian_anova)</span>
-<span id="cb23-4"><a href="basic-statistical-analysis.html#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(circadian_residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="basic-statistical-analysis.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Circadian_anova, <span class="at">which=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="basic-statistical-analysis.html#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This normality assumption can be further confirmed using the Shapiro normality test.</span></span>
+<span id="cb30-2"><a href="basic-statistical-analysis.html#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="basic-statistical-analysis.html#cb30-3" aria-hidden="true" tabindex="-1"></a>circadian_residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="at">object =</span> Circadian_anova)</span>
+<span id="cb30-4"><a href="basic-statistical-analysis.html#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(circadian_residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  circadian_residuals
 ## W = 0.95893, p-value = 0.468</code></pre>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="basic-statistical-analysis.html#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the Shapiro normality test, the P-value = 0.468, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. </span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="basic-statistical-analysis.html#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the Shapiro normality test, the P-value = 0.468, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. </span></span></code></pre></div>
 <p>Lastly,</p>
 <p>Since the ANOVA test is significant, you may want to compute the Tukey test to check for pairwise-comparison between the means of groups</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="basic-statistical-analysis.html#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the ANOVA</span></span>
-<span id="cb26-2"><a href="basic-statistical-analysis.html#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-3"><a href="basic-statistical-analysis.html#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-4"><a href="basic-statistical-analysis.html#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb26-5"><a href="basic-statistical-analysis.html#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(Circadian.aov) <span class="co"># Turkey will not accept anova generated from &quot;lm&quot; function. So use the aov here.</span></span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="basic-statistical-analysis.html#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute the Tukey result</span></span>
+<span id="cb33-2"><a href="basic-statistical-analysis.html#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="basic-statistical-analysis.html#cb33-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-4"><a href="basic-statistical-analysis.html#cb33-4" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(Circadian.aov) <span class="co"># Turkey will not accept anova generated from &quot;lm&quot; function. So use the aov here.</span></span></code></pre></div>
 <pre><code>##   Tukey multiple comparisons of means
 ##     95% family-wise confidence level
 ## 
@@ -327,12 +338,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## eyes-control -1.24267857 -2.1682364 -0.3171207 0.0078656
 ## knee-control -0.02696429 -0.9525222  0.8985936 0.9969851
 ## knee-eyes     1.21571429  0.2598022  2.1716263 0.0116776</code></pre>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="basic-statistical-analysis.html#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># You can see that both eyes-control and knee-eyes are both significant (check the p-value) </span></span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="basic-statistical-analysis.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># You can see that both eyes-control and knee-eyes are both significant (check the p-value) </span></span></code></pre></div>
 <p>Also, maybe you try the Pairwise-test (not compulsory though)</p>
 <p>Pairwise t-test
 This can be used to compute pairwise comparisons between group levels with corrections for multiple testing.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="basic-statistical-analysis.html#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.t.test</span>(Circadian<span class="sc">$</span>shift, Circadian<span class="sc">$</span>treatment,</span>
-<span id="cb29-2"><a href="basic-statistical-analysis.html#cb29-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p.adjust.method =</span> <span class="st">&quot;BH&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="basic-statistical-analysis.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.t.test</span>(Circadian<span class="sc">$</span>shift, Circadian<span class="sc">$</span>treatment,</span>
+<span id="cb36-2"><a href="basic-statistical-analysis.html#cb36-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">p.adjust.method =</span> <span class="st">&quot;BH&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Pairwise comparisons using t tests with pooled SD 
 ## 
@@ -343,7 +354,128 @@ This can be used to compute pairwise comparisons between group levels with corre
 ## knee 0.9418  0.0066
 ## 
 ## P value adjustment method: BH</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="basic-statistical-analysis.html#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The BH means that- adjust the p-values by the Benjamini-Hochberg method.</span></span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="basic-statistical-analysis.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># The BH means that- adjust the p-values by the Benjamini-Hochberg method.</span></span></code></pre></div>
+<p>For question that came up in class (about printing your output to your report using “broom” package). Let’s use this code.</p>
+<p>Assuming we want to print our Tukey result (of course, you can do that for any output), follow the code below:</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="basic-statistical-analysis.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&#39;kableExtra&#39;</span>)</span></code></pre></div>
+<pre><code>## Warning in install.packages :
+##   package &#39;kableExtra&#39; is in use and will not be installed</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="basic-statistical-analysis.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(kableExtra)</span>
+<span id="cb41-2"><a href="basic-statistical-analysis.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(broom) <span class="co"># to tidy statistical models into data frames and for easy export</span></span>
+<span id="cb41-3"><a href="basic-statistical-analysis.html#cb41-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-4"><a href="basic-statistical-analysis.html#cb41-4" aria-hidden="true" tabindex="-1"></a>Tukey_output <span class="ot">=</span> <span class="fu">TukeyHSD</span>(Circadian.aov)</span>
+<span id="cb41-5"><a href="basic-statistical-analysis.html#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="basic-statistical-analysis.html#cb41-6" aria-hidden="true" tabindex="-1"></a><span class="fu">tidy</span>(Tukey_output)  <span class="co"># Tidy it</span></span></code></pre></div>
+<pre><code>## # A tibble: 3 x 7
+##   term      contrast     null.value estimate conf.low conf.high adj.p.value
+##   &lt;chr&gt;     &lt;chr&gt;             &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;       &lt;dbl&gt;
+## 1 treatment eyes-control          0  -1.24     -2.17     -0.317     0.00787
+## 2 treatment knee-control          0  -0.0270   -0.953     0.899     0.997  
+## 3 treatment knee-eyes             0   1.22      0.260     2.17      0.0117</code></pre>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="basic-statistical-analysis.html#cb43-1" aria-hidden="true" tabindex="-1"></a>Tidy_tukey <span class="ot">=</span> <span class="fu">tidy</span>(Tukey_output)  <span class="co"># save it as data frame to &quot;kable&quot; it out</span></span>
+<span id="cb43-2"><a href="basic-statistical-analysis.html#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="basic-statistical-analysis.html#cb43-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-4"><a href="basic-statistical-analysis.html#cb43-4" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(Tidy_tukey, <span class="st">&quot;html&quot;</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb43-5"><a href="basic-statistical-analysis.html#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="st">&quot;striped&quot;</span>, <span class="at">full_width =</span> F) <span class="sc">%&gt;%</span> </span>
+<span id="cb43-6"><a href="basic-statistical-analysis.html#cb43-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_header_above</span>()</span></code></pre></div>
+<table class="table table-striped" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+term
+</th>
+<th style="text-align:left;">
+contrast
+</th>
+<th style="text-align:right;">
+null.value
+</th>
+<th style="text-align:right;">
+estimate
+</th>
+<th style="text-align:right;">
+conf.low
+</th>
+<th style="text-align:right;">
+conf.high
+</th>
+<th style="text-align:right;">
+adj.p.value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+treatment
+</td>
+<td style="text-align:left;">
+eyes-control
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-1.2426786
+</td>
+<td style="text-align:right;">
+-2.1682364
+</td>
+<td style="text-align:right;">
+-0.3171207
+</td>
+<td style="text-align:right;">
+0.0078656
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+treatment
+</td>
+<td style="text-align:left;">
+knee-control
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+-0.0269643
+</td>
+<td style="text-align:right;">
+-0.9525222
+</td>
+<td style="text-align:right;">
+0.8985936
+</td>
+<td style="text-align:right;">
+0.9969851
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+treatment
+</td>
+<td style="text-align:left;">
+knee-eyes
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1.2157143
+</td>
+<td style="text-align:right;">
+0.2598022
+</td>
+<td style="text-align:right;">
+2.1716263
+</td>
+<td style="text-align:right;">
+0.0116776
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="two-way-anova" class="section level3" number="5.1.2">
 <h3><span class="header-section-number">5.1.2</span> TWO-Way ANOVA</h3>
@@ -352,11 +484,11 @@ This can be used to compute pairwise comparisons between group levels with corre
 <p>Context-</p>
 <p>Sclerophrys perreti is an endemic species to Nigeria, reportedly lost for over 50 years and rediscovered in 2013 at its type locality. It is considered to be a vulnerable species facing an extinction risk due to several threats, including predators, among other factors. The presence of predators in the habitats of Sclerophrys perreti poses a threat to the survival of this species. In this study, the aim is to check whether Sclerophrys perreti can survive in the presence or absence of predators and assess if this can be explained by the behavior of this predator species (day or night). This experiment involves monitoring the activities of Sclerophrys perreti in the habitat for three months during the rainy season.
 Hypothetically, we would expect that the survival of Sclerophrys perreti depends on the abundance of predators (presence or absence) in the neighboring environment, survey time (day or night) and to investigate if there is an interaction between the predictors (predator and survey time) on the abundance of Sclerophrys perreti</p>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="basic-statistical-analysis.html#cb32-1" aria-hidden="true" tabindex="-1"></a>Perret <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="fu">file.choose</span>(), <span class="at">header =</span> <span class="cn">TRUE</span>) <span class="co"># Load the csv file named &quot;AkandeData&quot;</span></span>
-<span id="cb32-2"><a href="basic-statistical-analysis.html#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="basic-statistical-analysis.html#cb32-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ANOVA </span><span class="al">TEST</span></span>
-<span id="cb32-4"><a href="basic-statistical-analysis.html#cb32-4" aria-hidden="true" tabindex="-1"></a>Perret_anova <span class="ot">&lt;-</span> <span class="fu">lm</span>( Call <span class="sc">~</span> Predator<span class="sc">*</span>Survey, <span class="at">data=</span>Perret) </span>
-<span id="cb32-5"><a href="basic-statistical-analysis.html#cb32-5" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(Perret_anova)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="basic-statistical-analysis.html#cb44-1" aria-hidden="true" tabindex="-1"></a>Perret <span class="ot">=</span> <span class="fu">read.csv</span>(<span class="fu">file.choose</span>(), <span class="at">header =</span> <span class="cn">TRUE</span>) <span class="co"># Load the csv file named &quot;AkandeData&quot;</span></span>
+<span id="cb44-2"><a href="basic-statistical-analysis.html#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="basic-statistical-analysis.html#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ANOVA </span><span class="al">TEST</span></span>
+<span id="cb44-4"><a href="basic-statistical-analysis.html#cb44-4" aria-hidden="true" tabindex="-1"></a>Perret_anova <span class="ot">&lt;-</span> <span class="fu">lm</span>( Call <span class="sc">~</span> Predator<span class="sc">*</span>Survey, <span class="at">data=</span>Perret) </span>
+<span id="cb44-5"><a href="basic-statistical-analysis.html#cb44-5" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(Perret_anova)</span></code></pre></div>
 <pre><code>## Analysis of Variance Table
 ## 
 ## Response: Call
@@ -370,36 +502,36 @@ Hypothetically, we would expect that the survival of Sclerophrys perreti depends
 <ol style="list-style-type: decimal">
 <li>Test for homogeneity</li>
 </ol>
-<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="basic-statistical-analysis.html#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Perret_anova, <span class="dv">1</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="basic-statistical-analysis.html#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(Call <span class="sc">~</span> <span class="fu">factor</span>(Predator) <span class="sc">*</span> <span class="fu">factor</span>(Survey), <span class="at">data=</span>Perret)</span></code></pre></div>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="basic-statistical-analysis.html#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Perret_anova, <span class="dv">1</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="basic-statistical-analysis.html#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">leveneTest</span>(Call <span class="sc">~</span> <span class="fu">factor</span>(Predator) <span class="sc">*</span> <span class="fu">factor</span>(Survey), <span class="at">data=</span>Perret)</span></code></pre></div>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
 ##       Df F value Pr(&gt;F)
 ## group  3   1.687 0.2098
 ##       16</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="basic-statistical-analysis.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the result of the &quot;levene test&quot;, given that the P-value is = 0.2098, which is greater than the chosen P-value of 0.05, we have strong evidence to accept the null hypothesis and conclude there&#39;s no evidence that all the treatment combination come from population with different variance. Therefore, the assumption of homogeneity is met.  </span></span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="basic-statistical-analysis.html#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># From the result of the &quot;levene test&quot;, given that the P-value is = 0.2098, which is greater than the chosen P-value of 0.05, we have strong evidence to accept the null hypothesis and conclude there&#39;s no evidence that all the treatment combination come from population with different variance. Therefore, the assumption of homogeneity is met.  </span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>Assessing normality</li>
 </ol>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="basic-statistical-analysis.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Perret_anova, <span class="at">which=</span><span class="dv">2</span>)</span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="basic-statistical-analysis.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This normality assumption can be further confirmed using the Shapiro normality test.</span></span>
-<span id="cb39-2"><a href="basic-statistical-analysis.html#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb39-3"><a href="basic-statistical-analysis.html#cb39-3" aria-hidden="true" tabindex="-1"></a>anova_residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="at">object =</span> Perret_anova)</span>
-<span id="cb39-4"><a href="basic-statistical-analysis.html#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(anova_residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="basic-statistical-analysis.html#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(Perret_anova, <span class="at">which=</span><span class="dv">2</span>)</span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="basic-statistical-analysis.html#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This normality assumption can be further confirmed using the Shapiro normality test.</span></span>
+<span id="cb51-2"><a href="basic-statistical-analysis.html#cb51-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-3"><a href="basic-statistical-analysis.html#cb51-3" aria-hidden="true" tabindex="-1"></a>anova_residuals <span class="ot">&lt;-</span> <span class="fu">residuals</span>(<span class="at">object =</span> Perret_anova)</span>
+<span id="cb51-4"><a href="basic-statistical-analysis.html#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(anova_residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  anova_residuals
 ## W = 0.95544, p-value = 0.4573</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="basic-statistical-analysis.html#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="co"># As it can be observed from the QQ plot, most of the residuals falls on the straight line and implies that this data comes from a normally distributed population. This can be further confirmed using the Shapiro-Wilk normality test. From the Shapiro normality test, the P-value = 0.4573, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. </span></span></code></pre></div>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="basic-statistical-analysis.html#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interaction plot </span></span>
-<span id="cb42-2"><a href="basic-statistical-analysis.html#cb42-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-3"><a href="basic-statistical-analysis.html#cb42-3" aria-hidden="true" tabindex="-1"></a>Perret_summary <span class="ot">&lt;-</span> Perret <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Survey, Predator) <span class="sc">%&gt;%</span> </span>
-<span id="cb42-4"><a href="basic-statistical-analysis.html#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">y_mean =</span> <span class="fu">mean</span>(Call),</span>
-<span id="cb42-5"><a href="basic-statistical-analysis.html#cb42-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">y_se =</span> psych<span class="sc">::</span><span class="fu">describe</span>(Call)<span class="sc">$</span>se)</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="basic-statistical-analysis.html#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># As it can be observed from the QQ plot, most of the residuals falls on the straight line and implies that this data comes from a normally distributed population. This can be further confirmed using the Shapiro-Wilk normality test. From the Shapiro normality test, the P-value = 0.4573, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. </span></span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="basic-statistical-analysis.html#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Interaction plot </span></span>
+<span id="cb54-2"><a href="basic-statistical-analysis.html#cb54-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="basic-statistical-analysis.html#cb54-3" aria-hidden="true" tabindex="-1"></a>Perret_summary <span class="ot">&lt;-</span> Perret <span class="sc">%&gt;%</span> <span class="fu">group_by</span>(Survey, Predator) <span class="sc">%&gt;%</span> </span>
+<span id="cb54-4"><a href="basic-statistical-analysis.html#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">y_mean =</span> <span class="fu">mean</span>(Call),</span>
+<span id="cb54-5"><a href="basic-statistical-analysis.html#cb54-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">y_se =</span> psych<span class="sc">::</span><span class="fu">describe</span>(Call)<span class="sc">$</span>se)</span></code></pre></div>
 <pre><code>## `summarise()` has grouped output by &#39;Survey&#39;. You can override using the `.groups` argument.</code></pre>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="basic-statistical-analysis.html#cb44-1" aria-hidden="true" tabindex="-1"></a>Perret_summary</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="basic-statistical-analysis.html#cb56-1" aria-hidden="true" tabindex="-1"></a>Perret_summary</span></code></pre></div>
 <pre><code>## # A tibble: 4 x 4
 ## # Groups:   Survey [2]
 ##   Survey Predator   y_mean  y_se
@@ -408,17 +540,17 @@ Hypothetically, we would expect that the survival of Sclerophrys perreti depends
 ## 2 day    &quot;Presence&quot;   3.3  0.256
 ## 3 night  &quot;Absence &quot;   6.54 1.04 
 ## 4 night  &quot;Presence&quot;   3.22 0.212</code></pre>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="basic-statistical-analysis.html#cb46-1" aria-hidden="true" tabindex="-1"></a>Perret_summary<span class="sc">%&gt;%</span> </span>
-<span id="cb46-2"><a href="basic-statistical-analysis.html#cb46-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Survey, <span class="at">y =</span> y_mean, <span class="at">color =</span> Predator)) <span class="sc">+</span></span>
-<span id="cb46-3"><a href="basic-statistical-analysis.html#cb46-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> Predator)) <span class="sc">+</span></span>
-<span id="cb46-4"><a href="basic-statistical-analysis.html#cb46-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb46-5"><a href="basic-statistical-analysis.html#cb46-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> y_mean<span class="fl">-1.96</span><span class="sc">*</span>y_se, </span>
-<span id="cb46-6"><a href="basic-statistical-analysis.html#cb46-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax =</span> y_mean<span class="fl">+1.96</span><span class="sc">*</span>y_se),</span>
-<span id="cb46-7"><a href="basic-statistical-analysis.html#cb46-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">width =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb46-8"><a href="basic-statistical-analysis.html#cb46-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Survey Time&quot;</span>,<span class="at">color  =</span> <span class="st">&quot;Predator&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Activity Call (min)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb46-9"><a href="basic-statistical-analysis.html#cb46-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_classic</span>() </span></code></pre></div>
-<p><img src="bookdownproj_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<p>```</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="basic-statistical-analysis.html#cb58-1" aria-hidden="true" tabindex="-1"></a>Perret_summary<span class="sc">%&gt;%</span> </span>
+<span id="cb58-2"><a href="basic-statistical-analysis.html#cb58-2" aria-hidden="true" tabindex="-1"></a>      <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> Survey, <span class="at">y =</span> y_mean, <span class="at">color =</span> Predator)) <span class="sc">+</span></span>
+<span id="cb58-3"><a href="basic-statistical-analysis.html#cb58-3" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_line</span>(<span class="fu">aes</span>(<span class="at">group =</span> Predator)) <span class="sc">+</span></span>
+<span id="cb58-4"><a href="basic-statistical-analysis.html#cb58-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb58-5"><a href="basic-statistical-analysis.html#cb58-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> y_mean<span class="fl">-1.96</span><span class="sc">*</span>y_se, </span>
+<span id="cb58-6"><a href="basic-statistical-analysis.html#cb58-6" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax =</span> y_mean<span class="fl">+1.96</span><span class="sc">*</span>y_se),</span>
+<span id="cb58-7"><a href="basic-statistical-analysis.html#cb58-7" aria-hidden="true" tabindex="-1"></a>                    <span class="at">width =</span> .<span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb58-8"><a href="basic-statistical-analysis.html#cb58-8" aria-hidden="true" tabindex="-1"></a>      <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Survey Time&quot;</span>,<span class="at">color  =</span> <span class="st">&quot;Predator&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Activity Call (min)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb58-9"><a href="basic-statistical-analysis.html#cb58-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">theme_classic</span>() </span></code></pre></div>
+<p><img src="bookdownproj_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p>The end of ANOVA test.</p>
 
 </div>
 </div>
