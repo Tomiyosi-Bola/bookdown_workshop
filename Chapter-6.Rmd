@@ -136,7 +136,7 @@ clean_Mona = clean_Mona[clean_Mona$.summary,]
 ```
 
 
-If you check the "clean_Mona", you will see there are many variables. We really don't need all of them for analysis, so why not just retain the variables will only need
+If you check the "clean_Mona", you will see there are many variables. We really don't need all of them for analysis, so why not just retain the variables we only need
 
 ```{r}
 
@@ -150,7 +150,7 @@ clean_Mona <-clean_Mona %>%
 ```
 
 
-Remember if the species list contains the name of the species. We need it in presence/absence format (I explained in class). So, let's turn the species name to 1 (for presence)
+Remember the data contains just the name of the species. We need it in presence/absence format (I explained in class). So, let's turn the species name to 1 (for presence)
 
 ```{r}
 
