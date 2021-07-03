@@ -8,5 +8,15 @@ basic-statistical-analysis
 analysis-of-variance-anova
 one-way-anova
 two-way-anova
-species-distribution-modeling
+introduction-to-species-distribution-modeling
+downloading-the-species-data
+cleaning-the-coordinates-and-checking-for-outliers
+download-climate-data
+generate-background-data
+extract-the-environmental-data-for-the-mona-coordinate
+test-for-multicollinearity
+model-selection
+fitting-the-model
+model-evaluation-and-validation
+map-prediction
 resources-and-references

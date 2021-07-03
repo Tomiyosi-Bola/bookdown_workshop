@@ -147,7 +147,8 @@ plot(Circadian_anova, 1)
 leveneTest(shift ~ factor(treatment), data=Circadian)
 # If you run this directly, you should get error message (unless you have installed the package containing the "levene")
 
-install.packages(c("openxlsx", "car", dependecies=TRUE))
+#install.packages("car", dependecies=TRUE)
+
 library(car)
 
 
@@ -216,7 +217,7 @@ For question that came up in class (about printing your output to your report us
 Assuming we want to print our Tukey result (of course, you can do that for any output), follow the code below:
 
 ```{r}
-install.packages('kableExtra')
+#install.packages('kableExtra')
 library(kableExtra)
 library(broom) # to tidy statistical models into data frames and for easy export
 

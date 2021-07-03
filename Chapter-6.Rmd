@@ -1,3 +1,695 @@
 
-# Species Distribution Modeling
+# Introduction to Species Distribution Modeling
+
+ Hammed A. Akande
+
+
+
+This chapter briefly introduce you to Species Distribution Modeling (hereinafter, SDM) in R. In SDM, we relate the species occurrence data (e.g. in presence-absence format) with their environmental data (e.g. climatic data) to predict the probability of species occurring in an area or their habitat suitability. In this tutorial, I am assuming you have basic knowledge of Ecology/Wildlife/Conservation biology and statistics. I encourage you to watch my presentation video and read more online, especially if you don't have knowledge of ecology or ecological factors that can affect species distribution.
+
+Now, let's start the modeling exercise.
+
+
+To run this exercise, you need to install and load the required Packages. Again, I assume you know how to install and load packages, if not, refer to my Day 1 slide and video (or check the introductory section of this book).  N.B- If you have installed the packages before, no need to install again, just load the library.
+
+```{r}
+
+#install.packages("dismo")
+#install.packages("maptools")
+#install.packages("maps")
+#install.packages("mapdata")
+#install.packages("dplyr")
+#install.packages("CoordinateCleaner")
+#install.packages("raster")
+#install.packages("ggplot2")
+#install.packages("scales")
+#install.packages("corrplot")
+
+library(dismo)
+library(maptools)
+library(maps)    
+library(mapdata) 
+library(dplyr)
+library(CoordinateCleaner)
+library(rgbif)
+library(corrplot)
+library(raster)
+
+
+```
+
+Today, we are using the GBIF website to download species data (obviously, you can load in and use your own data if you have). We shall be using the Mona Monkey as study species. Again, please read about ecology of Mona Monkey and if you don't know of GBIF (I explained in class though) read more online about the organization.
+
+### Downloading the Species Data
+
+
+```{r}
+
+Mona <- occ_search(scientificName = "Cercopithecus mona", hasCoordinate=T) 
+
+
+```
+
+This function "occ_search" search for the species at the GBIF website and see if there are data available. If yes, the data will be downloaded and that is only the ones with coordinate. Remember I set "hasCoordinate" to be equal to TRUE (apparently, you want to "spatially" model data with coordinates)
+
+
+The output will be stored as "Mona" (in form of list), but we only need the data part of it, so retain the data alone.
+
+```{r}
+
+Mona = Mona$data 
+
+View(Mona) #you can view the species to see how its structured
+
+head(Mona)  # to see the first 10 observations
+
+```
+
+
+How about we define the extent of our species to know the min and max longitude and latitude of the species? That should make sense I guess. So, set the geographic extent.
+
+```{r}
+
+max.lat <- ceiling(max(Mona$decimalLatitude))
+min.lat <- floor(min(Mona$decimalLatitude))
+max.lon <- ceiling(max(Mona$decimalLongitude))
+min.lon <- floor(min(Mona$decimalLongitude))
+geographic.extent <- extent(x = c(min.lon, max.lon, min.lat, max.lat))
+
+geographic.extent
+
+```
+
+Now, let's just check it on map to even know where our species are located in space. 
+
+```{r}
+
+data(wrld_simpl)
+
+# Base map
+plot(wrld_simpl, 
+     xlim = c(min.lon, max.lon),
+     ylim = c(min.lat, max.lat),
+     axes = TRUE, 
+     col = "grey95")
+
+# Individual obs points
+points(x = Mona$decimalLongitude, 
+       y = Mona$decimalLatitude, 
+       col = "red", 
+       pch = 20, 
+       cex = 0.75)
+box()
+
+
+```
+
+Voila! That's better. Looking at something in picture/plot/map make more sense I guess.
+
+
+### Cleaning the coordinates and checking for outliers
+
+At least now you know where they are located, but are you really sure all points are accurate? Do they all look correct? Do you think there might be errors in species collection or even when recording them? Or might be biased in any way? So, the best way to be sure is to do some "Data quality" checking.
+
+
+Let's use a package called CoordinateCleaner for this. I am testing for duplicates, centroids outliers and to check how far away from biodiversity institutions. use the code ?CoordinateCleaner to know more about what you can test for. 
+
+```{r}
+
+
+clean_Mona <- clean_coordinates(Mona, lon="decimalLongitude",lat="decimalLatitude", 
+                                       tests=c("centroids", "outliers", "duplicates", "institutions"),inst_rad = 10000)
+
+
+```
+
+Wow, 206 of 373 flagged. See why you need to clean data now? Else, your model(s) will be biased.
+
+
+
+Let's subset the data to only cleaned version now. 
+
+```{r}
+
+clean_Mona = clean_Mona[clean_Mona$.summary,]
+
+```
+
+
+If you check the "clean_Mona", you will see there are many variables. We really don't need all of them for analysis, so why not just retain the variables will only need
+
+```{r}
+
+clean_Mona = clean_Mona[, c("species", "decimalLatitude", "decimalLongitude")] 
+
+# or through the dplyr package. Of course, you will get the same result
+
+clean_Mona <-clean_Mona %>% 
+  dplyr::select(species, decimalLatitude, decimalLongitude)
+
+```
+
+
+Remember if the species list contains the name of the species. We need it in presence/absence format (I explained in class). So, let's turn the species name to 1 (for presence)
+
+```{r}
+
+Mona_P <- data.frame(clean_Mona, occ=1)
+
+head(Mona_P)
+
+# You see a new column is now added, called "occ" (as in short form of occurence)
+
+# If you wish to export this clean data (e.g. to csv), for further analysis, you can do that now. 
+
+#write.csv(clean_Mona, "Mona_cleaned.csv", row.names = FALSE)
+
+
+```
+
+
+
+Don't forget that SDM (as in the case of correlative), we want to relate the species with their environment to understand factors affecting them. 
+
+So, let's the Get the climate data. 
+
+### Download Climate data
+
+You can get climate data from worldclim, chelsa and paleoclim, among others.
+
+```{r}
+
+# You may want to set directory to store it 
+
+if(!dir.exists("bioclim_data")){
+  dir.create("bioclim_data", recursive = TRUE)
+}
+
+
+ clim_data <- getData(name = "worldclim",
+                     var = "bio",
+                        res = 5,
+                        path = "bioclim_data",
+                        download = T)
+
+
+```
+
+
+In SDM, to every presence, there should be absence. As you may know, absence data are often not available and so we can generate background (or pseudo-absence) data.
+
+
+### Generate Background data
+
+Let's generate Background data using the climate data we just downloaded as the sampling resolution
+
+
+```{r}
+
+bil.files <- list.files(path = "bioclim_data/wc5", 
+                        pattern = "*.bil$", 
+                        full.names = TRUE)
+
+# Let's just use one of the .bil files to mask the background data, we don't really need all
+
+mask <- raster(bil.files[1])
+
+# Use the randomPoints function to randomly sample points. Now, we shall sample the same number of points as our observed points (and extend it by 1.25). By sampling same number of occurence point and giving a bit room for extension, we are conservative enough and reduce bias.
+
+
+background <- randomPoints(mask = mask, n = nrow(Mona_P), ext = geographic.extent, extf = 1.25)
+
+```
+
+
+How about we Plot them on map (presence and pseudo-absence)
+
+```{r}
+
+
+plot(wrld_simpl, 
+     xlim = c(min.lon, max.lon),
+     ylim = c(min.lat, max.lat),
+     axes = TRUE, 
+     col = "grey35",
+     main = "Presence and pseudo-absence points")
+
+# Add the background points
+points(background, col = "green", pch = 1, cex = 0.75)
+
+# Add the observations
+points(x = Mona_P$decimalLongitude, 
+       y = Mona_P$decimalLatitude, 
+       col = "red", 
+       pch = 20, 
+       cex = 0.75)
+
+box()
+
+
+```
+
+
+Now, what we can do is to join them together.
+
+```{r}
+
+
+Mona_P = Mona_P[, c("decimalLongitude", "decimalLatitude", "occ")] # since we don't need the column "species" again, we can remove it. 
+
+
+background_dat <- data.frame(background) # put it in dataframe
+summary(background_dat)
+
+names(background_dat) <- c('decimalLongitude','decimalLatitude') # set the name of background_dat instead form "x" and "y" to Longitude and Latitude
+
+background_dat$occ <- 0  # set absence data to 0 (remember we set presence to 1)
+summary(background_dat)
+
+
+Mona_PA <- rbind(Mona_P, background_dat) # use the "rbind" function to row bind them. 
+summary(Mona_PA)
+
+Mona_PA = data.frame(Mona_PA)
+
+dplyr::sample_n(Mona_PA, 10) # randomly check 10 observations
+
+
+```
+
+
+
+
+###  Extract the environmental data for the Mona coordinate
+
+```{r}
+
+
+Mona_PA = cbind(Mona_PA, raster::extract(x = clim_data, y = data.frame(Mona_PA[,c('decimalLongitude','decimalLatitude')]), cellnumbers=T ))
+
+
+# Check if there are duplicated cells 
+duplicated(Mona_PA$cells)
+
+```
+
+You can see some duplicated cells, right? So, let's retains non-duplicated cells (obviously, you don't want to have duplicated cells in analysis)
+
+Retain non-duplicated cells 
+
+```{r}
+
+Mona_PA <- Mona_PA[!duplicated(Mona_PA$cells),]
+
+# Now check again if there are duplicated cells (I am certain it will all be FALSE now)
+
+duplicated(Mona_PA$cells)
+
+```
+
+
+Check for missing values (NA)
+
+```{r}
+
+any(is.na(Mona_PA)) # Check for NA
+
+```
+
+Clear enough right? We have missing values, so let's remove them
+
+Remove NA
+
+```{r}
+
+
+Mona_PA = na.omit(Mona_PA) # remove NA
+
+# check again. This time, it should be FALSE
+
+any(is.na(Mona_PA))
+
+
+```
+
+That's it. We can start the process of model fitting
+
+
+Before we even start, its a good idea to test for multicollinearity (to be sure we don't have multicollinear variables). I explained why this is not good in class- watch the video or read more online.
+
+
+### Test for Multicollinearity 
+
+Build a correlation matrix
+
+
+```{r}
+
+cor_mat <- cor(Mona_PA[,-c(1:6)], method='spearman')
+
+corrplot.mixed(cor_mat, tl.pos='d', tl.cex=0.6, number.cex=0.5, addCoefasPercent=T)
+
+
+```
+
+
+We can use a function called "select07" to remove highly correlated variables (variables greater than 70% = 0.7). (See Dorman et al 2013) 
+
+```{r}
+
+library(devtools)
+#devtools::install_git("https://gitup.uni-potsdam.de/macroecology/mecofun.git")
+
+library(mecofun)
+
+# Run select07()
+
+var_sel <- select07(X=Mona_PA[,-c(1:4)], 
+                    y=Mona_PA$occ, 
+                    threshold=0.7)
+
+# Check out the structure of the resulting object:
+str(var_sel)
+
+
+# Extract the names of the weakly correlated predictors in order of their AIC:
+
+pred_sel = var_sel$pred_sel
+pred_sel
+
+
+```
+
+See important variables in that order
+
+
+
+### Model selection 
+
+We can fit different regression model to predict our species. This model can take linear function, quadratic or polynomial. We can then use vif or AIC to determine which one work best for this model. For the sake of this exercise, I will only fit Linear relationship.
+
+```{r}
+
+
+
+# Take any bioclim variable and fit a GLM assuming a linear relationship:
+
+model_linear <- glm(occ ~ bio19, family=binomial(link=logit), data= Mona_PA)
+
+summary(model_linear) 
+
+```
+
+
+Okay, let's fit a quadratic relationship with the same bioclim var used above:
+
+```{r}
+
+
+model_quad <- glm(occ ~ bio19 + I(bio19^2), family=binomial(link=logit), data= Mona_PA)
+
+summary(model_quad)
+
+```
+
+
+We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with AIC is the best model to be selected
+
+```{r}
+
+
+AIC(model_linear) 
+AIC(model_quad)
+
+
+```
+
+Voila! Ideally, including the interaction term (quadratic function) seems to make more sense for this model. However, as I said earlier, for the sake of this exercise, I will just continue with linear model to demonstrate what we really want to know. If you want to do more (include quadratic or anything), you can go ahead using the same model formula above or reach out to me if you have issues or concerns.
+
+
+### Fitting the model
+
+Now that we know which model to fit, we can select the model and then evaluate the prediction. 
+
+
+```{r}
+
+# regression model
+
+
+
+model = step(glm(occ ~ bio4 + bio6 + bio15 + bio19, family=binomial(link=logit), data= Mona_PA))
+
+summary(model)
+
+
+```
+
+
+
+
+```{r}
+#Let's see the plot of Occurrence
+
+my_preds <- c('bio4', 'bio6', "bio15", "bio19")
+
+bio_clim_df1 <- data.frame(rasterToPoints(clim_data[[my_preds]]))
+
+any(is.na(bio_clim_df1))
+
+bio_clim_df1<- na.omit(bio_clim_df1)
+
+Model_glm_pred <- rasterFromXYZ(cbind(bio_clim_df1[,1:2],predict(model, bio_clim_df1, type='response')))
+plot((Model_glm_pred),
+     xlim = c(min(Mona_PA$decimalLongitude),max (Mona_PA$decimalLongitude)),
+     ylim = c(min(Mona_PA$decimalLatitude), max(Mona_PA$decimalLatitude)),
+     main='Probability of Occurence', axes=F)  
+
+
+```
+
+
+Good. You can see the habitat suitability right? or the probability of occurrence for Mona Monkey. How about we zoom in to Africa and check it well?
+
+
+Run the code below to zoom into Africa
+
+```{r}
+
+
+plot((Model_glm_pred),
+     xlim = c(min(-25),max (50)),
+     ylim = c(min(-40), max(40)),
+     main='Probability of Occurence- Mona Monkey', axes=F)  
+
+
+```
+   
+
+You may want to assess the goodness of fit
+
+```{r}     
+
+
+# Explained deviance:
+expl_deviance(obs = Mona_PA$occ,
+              pred = model$fitted)
+
+
+
+```
+
+49.8% of the predictors explained the deviance in the model
+
+
+Okay, that's not what we want to do with SDM here. Let's transfer the probability of occurence to binary prediction
+
+
+### Model evaluation and validation
+
+Because we need to evaluate the prediction (of course if you write exam, you want to know how well you perform), so we need to set up evaluation dataset. The approach to do this (as in remote sensing) is to divide (randomly) the data into testing and training. So, let's set out 70% of our Mona monkey as training data and the remaining 30% for testing later. Lastly, we have selected linear function up there, so we are good to go and can fit different algorithms now.
+
+
+
+Split and train the model 
+
+```{r}
+
+
+# Use 70% for training data (of course you can change it and use 60 or 80% depending on you)
+
+train_data <- sample(seq_len(nrow(Mona_PA)), size=round(0.7*nrow(Mona_PA)))
+
+# Okay, let's subset the training & testing data
+
+Mona_train <- Mona_PA[train_data,]
+Mona_test <- Mona_PA[-train_data,]
+
+# If you want to store the split information for later use, use this code: 
+
+#write(train_data, file = "Mona_traindata.txt")
+
+#remember I said we can store other file than csv alone right?)
+
+
+```
+
+
+Using our GLM regression (but now on the training data) to evaluate how well it perform
+
+
+```{r}
+
+model_glm = step(glm(occ ~ bio4 + bio6 + bio15 + bio19, family=binomial(link=logit), data= Mona_train))
+
+summary(model_glm)
+
+```
+
+
+
+You may want to check the response curve
+
+```{r}
+
+my_preds = c("bio4", "bio6", "bio15", "bio19")
+
+preds_cv <- crossvalSDM(model_glm, traindat = Mona_train, colname_species = 'occ', colname_pred = my_preds)
+
+
+plot(model_glm$fitted.values, preds_cv, xlab='Fitted values', ylab='Predicted values from CV')
+abline(0,1,col='red',lwd=2)
+
+
+```
+
+
+Before we map the prediction, let's threshold the data (and try check the threshold independent metrics- AUC)
+
+Thresholding
+
+```{r}
+
+
+library(PresenceAbsence)
+
+
+# Cross-validated predictions:
+
+threshold_data <- data.frame(ID = seq_len(nrow(Mona_train)), obs = Mona_train$occ, pred = preds_cv)
+
+# Get the optimal thresholds:     
+(threshold_optimal <- PresenceAbsence::optimal.thresholds(DATA= threshold_data))
+
+
+
+```
+
+Good. You can now use any values above to threshold your species data to "presence" and "absence"
+
+
+```{r}
+# Threshold using the max sen+spec
+
+# Print the confusion Matrix
+
+(cmx_maxSSS <- PresenceAbsence::cmx(DATA= threshold_data, threshold=threshold_optimal[3,2]))
+
+```
+
+
+
+Let's compute AUC
+
+
+```{r}
+
+
+
+library(AUC)
+
+# Let's have a look a the ROC curve:
+roc_cv <- roc(preds_cv, as.factor(Mona_train$occ))
+plot(roc_cv, col = "grey70", lwd = 2)
+
+
+
+```
+
+Compute the AUC and other evaluation metrics:
+
+```{r}
+
+
+(evaluation_metrics = evalSDM(Mona_train$occ, preds_cv, thresh.method = "MaxSens+Spec"))
+
+
+```
+
+
+
+We can now validate the model performance on the test data
+
+```{r}
+
+
+(performance_glm <- evalSDM(Mona_test$occ, predict(model_glm, Mona_test[,my_preds], type='response'), thresh.method =  "MaxSens+Spec"))
+
+
+```
+
+
+Please note- 
+
+Sensitivity = true positive rate
+Specificity = true negative rate
+PCC = Proportion of correctly classified observations, 
+
+We can evaluate if the model is good or not with TSS (true skill statistics or Kappa). You can also chekc AUC (Area under the curve). You may ask which curve, the ROC curve- Receiver operating characteristics. 
+
+
+### Map prediction
+
+Now, let's check the Map prediction by plotting the main binary map with the data- 
+
+```{r}
+
+bio_clim_df_2 <- data.frame(rasterToPoints(clim_data[[my_preds]]))
+
+any(is.na(bio_clim_df_2))
+bio_clim_df_2<- na.omit(bio_clim_df_2)
+
+
+binary_glm <- predicted_glm <- rasterFromXYZ(cbind(bio_clim_df_2[,1:2],predict(model_glm, bio_clim_df_2, type='response')))
+values(binary_glm) <- ifelse(values(predicted_glm)>= performance_glm$thresh, 1, 0)
+plot(stack(predicted_glm, binary_glm),
+     xlim = c(min(-25),max (50)),
+     ylim = c(min(-40), max(40)),
+     main=c('Probability of Occurrence-Mona','Binary Prediction-Mona'), axes=F)  
+
+
+```
+
+
+Now, you can see the binary prediction of Mona Monkey throughout Africa.
+
+
+
+
+Great! We stopped here in class. I will update the book later as time permits (check back soon):
+
+1. Transfer this prediction to future (2050 or 2070)
+2. Use different model algorithms (random forest, boosted regression trees, etc)
+3. Ensemble the models (to account for model uncertainty) and lots more.
+
+
+If you have questions, feel free to ask email me or slack me. 
+
+
+
+
+
+
+
+
 
