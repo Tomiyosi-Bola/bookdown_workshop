@@ -463,7 +463,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## [290] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## [307] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE
 ## [324] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</code></pre>
-<p>You can see some duplicated cells, right? So, let’s retains non-duplicated cells (obviously, you don’t want to have duplicated cells in analysis)</p>
+<p>You can see some duplicated cells, right? So, let’s retain non-duplicated cells (obviously, you don’t want to have duplicated cells in analysis)</p>
 <p>Retain non-duplicated cells</p>
 <div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="introduction-to-species-distribution-modeling.html#cb87-1" aria-hidden="true" tabindex="-1"></a>Mona_PA <span class="ot">&lt;-</span> Mona_PA[<span class="sc">!</span><span class="fu">duplicated</span>(Mona_PA<span class="sc">$</span>cells),]</span>
 <span id="cb87-2"><a href="introduction-to-species-distribution-modeling.html#cb87-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -612,7 +612,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## AIC: 277.78
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<p>We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with AIC is the best model to be selected</p>
+<p>We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with lower AIC value is the best model to be selected.</p>
 <div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="introduction-to-species-distribution-modeling.html#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(model_linear) </span></code></pre></div>
 <pre><code>## [1] 314.2324</code></pre>
 <div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="introduction-to-species-distribution-modeling.html#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="fu">AIC</span>(model_quad)</span></code></pre></div>

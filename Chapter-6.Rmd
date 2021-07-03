@@ -293,7 +293,7 @@ duplicated(Mona_PA$cells)
 
 ```
 
-You can see some duplicated cells, right? So, let's retains non-duplicated cells (obviously, you don't want to have duplicated cells in analysis)
+You can see some duplicated cells, right? So, let's retain non-duplicated cells (obviously, you don't want to have duplicated cells in analysis)
 
 Retain non-duplicated cells 
 
@@ -413,7 +413,7 @@ summary(model_quad)
 ```
 
 
-We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with AIC is the best model to be selected
+We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with lower AIC value is the best model to be selected.
 
 ```{r}
 
