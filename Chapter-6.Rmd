@@ -499,7 +499,7 @@ expl_deviance(obs = Mona_PA$occ,
 
 ```
 
-49.8% of the predictors explained the deviance in the model
+55.9% of the predictors explained the deviance in the model
 
 
 Okay, that's not what we want to do with SDM here. Let's transfer the probability of occurence to binary prediction
