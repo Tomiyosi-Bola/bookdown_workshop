@@ -19,4 +19,8 @@ model-selection
 fitting-the-model
 model-evaluation-and-validation
 map-prediction
+model-diagnostics
+introduction
+model-assumptions
+checking-model-assumptions
 resources-and-references
