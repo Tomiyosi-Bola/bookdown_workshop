@@ -1,0 +1,1100 @@
+--- 
+title: "R Programming for Statistical Analysis"
+author: "Hammed Akande, Jeff Sauer, Abimbola Ogungbire, Tomiyosi Bola"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+---
+
+# Welcome
+
+
+Thanks for your interest in R Programming for statistical analysis. This is a three-day workshop from June 28 to June 30 (4 PM GMT, 11 AM EDT, 8 AM PDT on all days). This workshop aims to expose early-career scientists to coding and basic statistical analysis in R while fostering collaborations and knowledge sharing among participants. Specifically, we hope this workshop will enable young scholars to build expertise in R and make them competitive in global scholarships. 
+
+
+This book is intended to serve as a guide to learning R. Good thing is that the book is (and will be) FREE. So, whether you are attending the workshop live or not, you can always consult this book later on for reference. Please feel free to contribute to this open source project if you would want to add or correct the book. You can submit a pull request on Github or send a the corrections (for example, in R Markdown) and we update the book. 
+
+As this is only for 3days and limited with time, this workshop will only introduce you to basic coding and statistics and by no means exhaustive. For a more detailed analysis, please refer to online resources or contact any of the workshop facilitators to discuss better. 
+
+<!--chapter:end:index.Rmd-->
+
+
+# Installing R/RStudio
+
+1. Installing R and RStudio, 
+2. Installing and loading Packages
+
+
+
+Before you start programming in R, you will need to download and install R and RStudio on your computer. R is the programming language used for statistical analysis. R Studio is an Integrated Development Environment (IDE) and a Graphical User Interface (GUI) that allows for easy programming in R. It is important to note that you can use R without RStudio. However, you can not use RStudio without R. So, I encourage you to download both.
+
+## To download R
+
+R is hosted on the Comprehensive R Archive Network (CRAN) website (https://cran.r-project.org/). Once you are on the CRAN website, you would see three different links to download R. Please consider your computer operating system and select whichever best describes it. For example, if you're using a Windows computer, please click on R for windows. If this is your first time installing R and you have not used R before, please click on the 1st link you see ("base"- Install R for the first time); otherwise, update your R (if necessary) or download R Studio (see below for a guide on how to do this). If you're using Mac or Linus, follow the same procedure on the CRAN website to download and install R. 
+
+Once you successfully install R, then you can download R studio. 
+
+## To download R Studio
+
+To download R Studio, please visit this website (https://www.rstudio.com/products/rstudio/download/). Once you click on that link, download the R Studio version recommended for your computer and install it. 
+
+Once you install R Studio, you can open it, and voila- welcome to the world of programming in R. 
+
+That is all for all now. If you do not get everything now- don't worry, I will run through it again during the workshop. The aim of giving you this early is to fast-track the process. Feel free to ask questions about the installation on slack or during the workshop- I will be glad to answer.
+ 
+
+<!--chapter:end:Chapter-2.Rmd-->
+
+
+# Data Structure and Basic Progamming in RStudio
+
+
+<!--chapter:end:Chapter-3.Rmd-->
+
+
+# Data Visualization
+
+
+<!--chapter:end:Chapter-4.Rmd-->
+
+
+# Basic Statistical Analysis
+
+
+ANOVA, Correlation and Regression
+
+## Analysis of Variance (ANOVA)
+
+### One-Way ANOVA
+
+ANOVA is a parametric test and simply an extension of two-samples t-test. By Parametric, I mean it make assumptions regarding the shape of the population. Such assumption includes normal distribution in each factor level, commonly refers to as a "bell-shaped" curve, homogeneity (equal variance) and that the observations are independent. Basically, in your research or more broadly, statistics, you often hear or conduct one or two way ANOVA. What this means is about the factor in question (the number of predictors/explanatory/independent variables). In one-way ANOVA,you only have one independent (factor) variable and in a two-way ANOVA, you have two. We shall see examples below. 
+
+
+When conducting ANOVA, you need to set up hypothesis. Basically, you have either H0 (null) or HA(Alternate hypothesis). Usually, your H0 hypothesis implies there is no difference in the mean of your groups. Simply put, your observations comes from populations with the same variance (homoscedastic). HA on the other hand states there is a difference (heteroscedastic). To test for this assumption of homoscedasticity, you can use the Levene's test (see below). N.B: if your H0 is rejected, you should not proceed with the standard ANOVA test- perhaps consider the equivalent non-parametric test (e.g., Kruskal-Wallis test) 
+
+
+Ideally, you should state this out explicitly, such as below:
+
+
+```{r}
+
+#H0: there is no mean difference in the observation under consideration
+#HA: there is a significant difference. 
+
+```
+
+Enough of lecture, let's quickly demonstrate this with data
+
+We shall be using the Circadian data. So, let's load the data. 
+
+For quick context, the data is about jet lag and adjusting to a different time zone. Campbell and Murphy (1998) claimed people adjust to their new time zone once the light reset their internal, circadian clock. Wright and Czeisler 2002 revisited this study and measured the circadian rhythm  of melatonin production. They subjected 22 people to random treatments; control, knees only and eyes. Please read more on this paper online or attached pdf  (Wright and Czeisler 2002).
+
+So for our analysis, we want to compare phase shifts in the circadian rhytm of melatonin productions in participants given another light treatments. 
+
+
+--- Load data---
+
+```{r}
+
+
+
+Circadian <- read.csv(file.choose()) # Load the csv named "Circadian"
+
+
+# Let's check what's in our data
+
+View(Circadian)
+
+# or use the "dplyr" package to randomly print 10 observations
+
+library(dplyr)
+
+
+
+dplyr::sample_n(Circadian, 10)
+
+
+
+
+```
+
+
+
+As you can see, this is a one-way factorial design. It has only one factor (the column treatment). Different treatments represents the levels in that factor and ideally are always ordered alphabetically. If you want to check the levels in your data, you can use the code below
+
+```{r}
+
+levels(Circadian$treatment)
+
+# See it gives error right? You need to order them
+
+Circadian$treatment = ordered(Circadian$treatment, levels = c("control","eyes", "knee"))
+
+# Check your levels now
+
+levels(Circadian$treatment)
+
+```
+
+Before we proceed with normal ANOVA calculation, let's play arond with codes and calculate the mean, median and standard deviation for this data.
+
+```{r}
+
+group_by(Circadian, treatment) %>%
+  summarise(
+    count = n(),
+    mean = mean(shift, na.rm = TRUE),
+    sd = sd(shift, na.rm = TRUE)
+  )
+
+```
+
+
+
+
+Also, you may want to even visualize this data and see how it looks. Let's install a package called "ggpubr" (which is from ggplot2 and used for publications mostly, hence the name "ggpubr")
+
+```{r}
+
+if(!require(ggpubr)) {install.packages("ggpubr"); library(ggpubr)}
+
+
+ggboxplot(Circadian, x = "treatment", y = "shift", 
+          color = "treatment", palette = c("#00AFBB", "#E7B800", "#FC4E07"),
+          order = c("control", "eyes", "knee"),
+          ylab = "Shift", xlab = "Treatment")
+
+```
+
+
+Now let's check our one-way ANOVA. 
+
+ANOVA TEST
+
+```{r}
+
+Circadian_anova <- lm( shift ~ treatment, data=Circadian) 
+Circadian_anova
+
+anova(Circadian_anova)
+
+
+```
+
+Another method to calculate ANOVA using the aov function 
+
+```{r}
+
+Circadian.aov <- aov(shift ~ treatment, data = Circadian)
+summary(Circadian.aov)
+
+
+```
+
+Still the same as above, right? Good.
+
+
+
+It is important to check all assumptions. So, we need to check all assumptions of ANOVA here now. This is important to confirm the validity of our statistical tool.
+
+1. Test for homogeneity
+
+```{r}
+
+plot(Circadian_anova, 1)
+
+leveneTest(shift ~ factor(treatment), data=Circadian)
+# If you run this directly, you should get error message (unless you have installed the package containing the "levene")
+
+#install.packages("car", dependecies=TRUE)
+
+library(car)
+
+
+#Now run your levene test
+
+leveneTest(shift ~ factor(treatment), data=Circadian) # see that the P value is > 0.05, there is no evidence to reject the H0 (they have the same variance)
+
+
+```
+
+
+2. Test for Normality
+
+
+```{r}
+
+plot(Circadian_anova, which=2)
+
+
+# This normality assumption can be further confirmed using the Shapiro normality test.
+
+circadian_residuals <- residuals(object = Circadian_anova)
+shapiro.test(circadian_residuals)
+
+# From the Shapiro normality test, the P-value = 0.468, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. 
+
+
+```
+
+
+Lastly, 
+
+
+Since the ANOVA test is significant, you may want to compute the Tukey test to check for pairwise-comparison between the means of groups
+
+```{r}
+# Compute the Tukey result
+
+
+TukeyHSD(Circadian.aov) # Turkey will not accept anova generated from "lm" function. So use the aov here.
+
+# You can see that both eyes-control and knee-eyes are both significant (check the p-value) 
+
+```
+
+Also, maybe you try the Pairwise-test (not compulsory though)
+
+Pairwise t-test
+This can be used to compute pairwise comparisons between group levels with corrections for multiple testing.
+
+
+```{r}
+
+pairwise.t.test(Circadian$shift, Circadian$treatment,
+                 p.adjust.method = "BH")
+
+# The BH means that- adjust the p-values by the Benjamini-Hochberg method.
+
+
+```
+
+
+
+For question that came up in class (about printing your output to your report using "broom" package). Let's use this code. 
+
+Assuming we want to print our Tukey result (of course, you can do that for any output), follow the code below:
+
+```{r}
+#install.packages('kableExtra')
+library(kableExtra)
+library(broom) # to tidy statistical models into data frames and for easy export
+
+Tukey_output = TukeyHSD(Circadian.aov)
+
+tidy(Tukey_output)  # Tidy it
+
+Tidy_tukey = tidy(Tukey_output)  # save it as data frame to "kable" it out
+
+
+kable(Tidy_tukey, "html") %>% 
+  kable_styling("striped", full_width = F) %>% 
+  add_header_above()
+
+
+```
+
+
+### TWO-Way ANOVA
+
+Here, let's use fictional study, obviously, you could use your own data if you have. 
+
+Fictional Study from (Hammed Akande).
+
+Context- 
+
+Sclerophrys perreti is an endemic species to Nigeria, reportedly lost for over 50 years and rediscovered in 2013 at its type locality. It is considered to be a vulnerable species facing an extinction risk due to several threats, including predators, among other factors. The presence of predators in the habitats of Sclerophrys perreti poses a threat to the survival of this species. In this study, the aim is to check whether Sclerophrys perreti can survive in the presence or absence of predators and assess if this can be explained by the behavior of this predator species (day or night). This experiment involves monitoring the activities of Sclerophrys perreti in the habitat for three months during the rainy season.
+Hypothetically, we would expect that the survival of Sclerophrys perreti depends on the abundance of predators (presence or absence) in the neighboring environment, survey time (day or night)  and to investigate if there is an interaction between the predictors (predator and survey time) on the abundance of Sclerophrys perreti
+
+
+```{r}
+
+
+Perret = read.csv(file.choose(), header = TRUE) # Load the csv file named "AkandeData"
+
+# ANOVA TEST
+Perret_anova <- lm( Call ~ Predator*Survey, data=Perret) 
+anova(Perret_anova)
+
+```
+
+
+
+ 1. Test for homogeneity
+
+```{r}
+
+plot(Perret_anova, 1)
+leveneTest(Call ~ factor(Predator) * factor(Survey), data=Perret)
+
+# From the result of the "levene test", given that the P-value is = 0.2098, which is greater than the chosen P-value of 0.05, we have strong evidence to accept the null hypothesis and conclude there's no evidence that all the treatment combination come from population with different variance. Therefore, the assumption of homogeneity is met.  
+
+
+```
+
+
+
+2. Assessing normality
+
+```{r}
+
+ 
+plot(Perret_anova, which=2)
+
+
+# This normality assumption can be further confirmed using the Shapiro normality test.
+
+anova_residuals <- residuals(object = Perret_anova)
+shapiro.test(anova_residuals)
+
+
+# As it can be observed from the QQ plot, most of the residuals falls on the straight line and implies that this data comes from a normally distributed population. This can be further confirmed using the Shapiro-Wilk normality test. From the Shapiro normality test, the P-value = 0.4573, which is greater than the chosen P-value (0.05) and therefore, we have strong evidence to conclude that this data comes from a normal population, as such normality assumption is met. 
+
+
+```
+
+
+
+
+```{r}
+
+# Interaction plot 
+
+Perret_summary <- Perret %>% group_by(Survey, Predator) %>% 
+  summarise(y_mean = mean(Call),
+            y_se = psych::describe(Call)$se)
+Perret_summary
+
+Perret_summary%>% 
+      ggplot(aes(x = Survey, y = y_mean, color = Predator)) +
+      geom_line(aes(group = Predator)) +
+      geom_point() +
+      geom_errorbar(aes(ymin = y_mean-1.96*y_se, 
+                    ymax = y_mean+1.96*y_se),
+                    width = .1) +
+      labs(x = "Survey Time",color  = "Predator", y = "Activity Call (min)") +
+      theme_classic() 
+
+
+```
+
+The end of ANOVA test.
+
+
+<!--chapter:end:Chapter-5.Rmd-->
+
+
+# Introduction to Species Distribution Modeling
+
+ Hammed A. Akande
+
+
+
+This chapter briefly introduce you to Species Distribution Modeling (hereinafter, SDM) in R. In SDM, we relate the species occurrence data (e.g. in presence-absence format) with their environmental data (e.g. climatic data) to predict the probability of species occurring in an area or their habitat suitability. In this tutorial, I am assuming you have basic knowledge of Ecology/Wildlife/Conservation biology and statistics. I encourage you to watch my presentation video and read more online, especially if you don't have knowledge of ecology or ecological factors that can affect species distribution.
+
+Now, let's start the modeling exercise.
+
+
+To run this exercise, you need to install and load the required Packages. Again, I assume you know how to install and load packages, if not, refer to my Day 1 slide and video (or check the introductory section of this book).  N.B- If you have installed the packages before, no need to install again, just load the library.
+
+```{r}
+
+#install.packages("dismo")
+#install.packages("maptools")
+#install.packages("maps")
+#install.packages("mapdata")
+#install.packages("dplyr")
+#install.packages("CoordinateCleaner")
+#install.packages("raster")
+#install.packages("ggplot2")
+#install.packages("scales")
+#install.packages("corrplot")
+
+library(dismo)
+library(maptools)
+library(maps)    
+library(mapdata) 
+library(dplyr)
+library(CoordinateCleaner)
+library(rgbif)
+library(corrplot)
+library(raster)
+
+
+```
+
+Today, we are using the GBIF website to download species data (obviously, you can load in and use your own data if you have). We shall be using the Mona Monkey as study species. Again, please read about ecology of Mona Monkey and if you don't know of GBIF (I explained in class though) read more online about the organization.
+
+### Downloading the Species Data
+
+
+```{r}
+
+Mona <- occ_search(scientificName = "Cercopithecus mona", hasCoordinate=T) 
+
+
+```
+
+This function "occ_search" search for the species at the GBIF website and see if there are data available. If yes, the data will be downloaded and that is only the ones with coordinate. Remember I set "hasCoordinate" to be equal to TRUE (apparently, you want to "spatially" model data with coordinates)
+
+
+The output will be stored as "Mona" (in form of list), but we only need the data part of it, so retain the data alone.
+
+```{r}
+
+Mona = Mona$data 
+
+View(Mona) #you can view the species to see how its structured
+
+head(Mona)  # to see the first 10 observations
+
+```
+
+
+How about we define the extent of our species to know the min and max longitude and latitude of the species? That should make sense I guess. So, set the geographic extent.
+
+```{r}
+
+max.lat <- ceiling(max(Mona$decimalLatitude))
+min.lat <- floor(min(Mona$decimalLatitude))
+max.lon <- ceiling(max(Mona$decimalLongitude))
+min.lon <- floor(min(Mona$decimalLongitude))
+geographic.extent <- extent(x = c(min.lon, max.lon, min.lat, max.lat))
+
+geographic.extent
+
+```
+
+Now, let's just check it on map to even know where our species are located in space. 
+
+```{r}
+
+data(wrld_simpl)
+
+# Base map
+plot(wrld_simpl, 
+     xlim = c(min.lon, max.lon),
+     ylim = c(min.lat, max.lat),
+     axes = TRUE, 
+     col = "grey95")
+
+# Individual obs points
+points(x = Mona$decimalLongitude, 
+       y = Mona$decimalLatitude, 
+       col = "red", 
+       pch = 20, 
+       cex = 0.75)
+box()
+
+
+```
+
+Voila! That's better. Looking at something in picture/plot/map make more sense I guess.
+
+
+### Cleaning the coordinates and checking for outliers
+
+At least now you know where they are located, but are you really sure all points are accurate? Do they all look correct? Do you think there might be errors in species collection or even when recording them? Or might be biased in any way? So, the best way to be sure is to do some "Data quality" checking.
+
+
+Let's use a package called CoordinateCleaner for this. I am testing for duplicates, centroids outliers and to check how far away from biodiversity institutions. use the code ?CoordinateCleaner to know more about what you can test for. 
+
+```{r}
+
+
+clean_Mona <- clean_coordinates(Mona, lon="decimalLongitude",lat="decimalLatitude", 
+                                       tests=c("centroids", "outliers", "duplicates", "institutions"),inst_rad = 10000)
+
+
+```
+
+Wow, 206 of 373 flagged. See why you need to clean data now? Else, your model(s) will be biased.
+
+
+
+Let's subset the data to only cleaned version now. 
+
+```{r}
+
+clean_Mona = clean_Mona[clean_Mona$.summary,]
+
+```
+
+
+If you check the "clean_Mona", you will see there are many variables. We really don't need all of them for analysis, so why not just retain the variables we only need
+
+```{r}
+
+clean_Mona = clean_Mona[, c("species", "decimalLatitude", "decimalLongitude")] 
+
+# or through the dplyr package. Of course, you will get the same result
+
+clean_Mona <-clean_Mona %>% 
+  dplyr::select(species, decimalLatitude, decimalLongitude)
+
+```
+
+
+Remember the data contains just the name of the species. We need it in presence/absence format (I explained in class). So, let's turn the species name to 1 (for presence)
+
+```{r}
+
+Mona_P <- data.frame(clean_Mona, occ=1)
+
+head(Mona_P)
+
+# You see a new column is now added, called "occ" (as in short form of occurence)
+
+# If you wish to export this clean data (e.g. to csv), for further analysis, you can do that now. 
+
+#write.csv(clean_Mona, "Mona_cleaned.csv", row.names = FALSE)
+
+
+```
+
+
+
+Don't forget that SDM (as in the case of correlative), we want to relate the species with their environment to understand factors affecting them. 
+
+So, let's the Get the climate data. 
+
+### Download Climate data
+
+You can get climate data from worldclim, chelsa and paleoclim, among others.
+
+```{r}
+
+# You may want to set directory to store it 
+
+if(!dir.exists("bioclim_data")){
+  dir.create("bioclim_data", recursive = TRUE)
+}
+
+
+ clim_data <- getData(name = "worldclim",
+                     var = "bio",
+                        res = 5,
+                        path = "bioclim_data",
+                        download = T)
+
+
+```
+
+
+In SDM, to every presence, there should be absence. As you may know, absence data are often not available and so we can generate background (or pseudo-absence) data.
+
+
+### Generate Background data
+
+Let's generate Background data using the climate data we just downloaded as the sampling resolution
+
+
+```{r}
+
+bil.files <- list.files(path = "bioclim_data/wc5", 
+                        pattern = "*.bil$", 
+                        full.names = TRUE)
+
+# Let's just use one of the .bil files to mask the background data, we don't really need all
+
+mask <- raster(bil.files[1])
+
+# Use the randomPoints function to randomly sample points. Now, we shall sample the same number of points as our observed points (and extend it by 1.25). By sampling same number of occurence point and giving a bit room for extension, we are conservative enough and reduce bias.
+
+
+background <- randomPoints(mask = mask, n = nrow(Mona_P), ext = geographic.extent, extf = 1.25)
+
+```
+
+
+How about we Plot them on map (presence and pseudo-absence)
+
+```{r}
+
+
+plot(wrld_simpl, 
+     xlim = c(min.lon, max.lon),
+     ylim = c(min.lat, max.lat),
+     axes = TRUE, 
+     col = "grey35",
+     main = "Presence and pseudo-absence points")
+
+# Add the background points
+points(background, col = "green", pch = 1, cex = 0.75)
+
+# Add the observations
+points(x = Mona_P$decimalLongitude, 
+       y = Mona_P$decimalLatitude, 
+       col = "red", 
+       pch = 20, 
+       cex = 0.75)
+
+box()
+
+
+```
+
+
+Now, what we can do is to join them together.
+
+```{r}
+
+
+Mona_P = Mona_P[, c("decimalLongitude", "decimalLatitude", "occ")] # since we don't need the column "species" again, we can remove it. 
+
+
+background_dat <- data.frame(background) # put it in dataframe
+summary(background_dat)
+
+names(background_dat) <- c('decimalLongitude','decimalLatitude') # set the name of background_dat instead form "x" and "y" to Longitude and Latitude
+
+background_dat$occ <- 0  # set absence data to 0 (remember we set presence to 1)
+summary(background_dat)
+
+
+Mona_PA <- rbind(Mona_P, background_dat) # use the "rbind" function to row bind them. 
+summary(Mona_PA)
+
+Mona_PA = data.frame(Mona_PA)
+
+dplyr::sample_n(Mona_PA, 10) # randomly check 10 observations
+
+
+```
+
+
+
+
+###  Extract the environmental data for the Mona coordinate
+
+```{r}
+
+
+Mona_PA = cbind(Mona_PA, raster::extract(x = clim_data, y = data.frame(Mona_PA[,c('decimalLongitude','decimalLatitude')]), cellnumbers=T ))
+
+
+# Check if there are duplicated cells 
+duplicated(Mona_PA$cells)
+
+```
+
+You can see some duplicated cells, right? So, let's retain non-duplicated cells (obviously, you don't want to have duplicated cells in analysis)
+
+Retain non-duplicated cells 
+
+```{r}
+
+Mona_PA <- Mona_PA[!duplicated(Mona_PA$cells),]
+
+# Now check again if there are duplicated cells (I am certain it will all be FALSE now)
+
+duplicated(Mona_PA$cells)
+
+```
+
+
+Check for missing values (NA)
+
+```{r}
+
+any(is.na(Mona_PA)) # Check for NA
+
+```
+
+Clear enough right? We have missing values, so let's remove them
+
+Remove NA
+
+```{r}
+
+
+Mona_PA = na.omit(Mona_PA) # remove NA
+
+# check again. This time, it should be FALSE
+
+any(is.na(Mona_PA))
+
+
+```
+
+That's it. We can start the process of model fitting
+
+
+Before we even start, its a good idea to test for multicollinearity (to be sure we don't have multicollinear variables). I explained why this is not good in class- watch the video or read more online.
+
+
+### Test for Multicollinearity 
+
+Build a correlation matrix
+
+
+```{r}
+
+cor_mat <- cor(Mona_PA[,-c(1:6)], method='spearman')
+
+corrplot.mixed(cor_mat, tl.pos='d', tl.cex=0.6, number.cex=0.5, addCoefasPercent=T)
+
+
+```
+
+
+We can use a function called "select07" to remove highly correlated variables (variables greater than 70% = 0.7). (See Dorman et al 2013) 
+
+```{r}
+
+library(devtools)
+#devtools::install_git("https://gitup.uni-potsdam.de/macroecology/mecofun.git")
+
+library(mecofun)
+
+# Run select07()
+
+var_sel <- select07(X=Mona_PA[,-c(1:4)], 
+                    y=Mona_PA$occ, 
+                    threshold=0.7)
+
+# Check out the structure of the resulting object:
+str(var_sel)
+
+
+# Extract the names of the weakly correlated predictors in order of their AIC:
+
+pred_sel = var_sel$pred_sel
+pred_sel
+
+
+```
+
+See important variables in that order
+
+
+
+### Model selection 
+
+We can fit different regression model to predict our species. This model can take linear function, quadratic or polynomial. We can then use vif or AIC to determine which one work best for this model. For the sake of this exercise, I will only fit Linear relationship.
+
+```{r}
+
+
+
+# Take any bioclim variable and fit a GLM assuming a linear relationship:
+
+model_linear <- glm(occ ~ bio19, family=binomial(link=logit), data= Mona_PA)
+
+summary(model_linear) 
+
+```
+
+
+Okay, let's fit a quadratic relationship with the same bioclim var used above:
+
+```{r}
+
+
+model_quad <- glm(occ ~ bio19 + I(bio19^2), family=binomial(link=logit), data= Mona_PA)
+
+summary(model_quad)
+
+```
+
+
+We can now use a Maximum likelihood estimator to select which model is best and fit the SDM. N.B- the lower your AIC, the better. So any model with lower AIC value is the best model to be selected.
+
+```{r}
+
+
+AIC(model_linear) 
+AIC(model_quad)
+
+
+```
+
+Voila! Ideally, including the interaction term (quadratic function) seems to make more sense for this model. However, as I said earlier, for the sake of this exercise, I will just continue with linear model to demonstrate what we really want to know. If you want to do more (include quadratic or anything), you can go ahead using the same model formula above or reach out to me if you have issues or concerns.
+
+
+### Fitting the model
+
+Now that we know which model to fit, we can select the model and then evaluate the prediction. 
+
+
+```{r}
+
+# regression model
+
+
+
+model = step(glm(occ ~ bio4 + bio6 + bio15 + bio19, family=binomial(link=logit), data= Mona_PA))
+
+summary(model)
+
+
+```
+
+
+
+
+```{r}
+#Let's see the plot of Occurrence
+
+my_preds <- c('bio4', 'bio6', "bio15", "bio19")
+
+bio_clim_df1 <- data.frame(rasterToPoints(clim_data[[my_preds]]))
+
+any(is.na(bio_clim_df1))
+
+bio_clim_df1<- na.omit(bio_clim_df1)
+
+Model_glm_pred <- rasterFromXYZ(cbind(bio_clim_df1[,1:2],predict(model, bio_clim_df1, type='response')))
+plot((Model_glm_pred),
+     xlim = c(min(Mona_PA$decimalLongitude),max (Mona_PA$decimalLongitude)),
+     ylim = c(min(Mona_PA$decimalLatitude), max(Mona_PA$decimalLatitude)),
+     main='Probability of Occurence', axes=F)  
+
+
+```
+
+
+Good. You can see the habitat suitability right? or the probability of occurrence for Mona Monkey. How about we zoom in to Africa and check it well?
+
+
+Run the code below to zoom into Africa
+
+```{r}
+
+
+plot((Model_glm_pred),
+     xlim = c(min(-25),max (50)),
+     ylim = c(min(-40), max(40)),
+     main='Probability of Occurence- Mona Monkey', axes=F)  
+
+
+```
+   
+
+You may want to assess the goodness of fit
+
+```{r}     
+
+
+# Explained deviance:
+expl_deviance(obs = Mona_PA$occ,
+              pred = model$fitted)
+
+
+
+```
+
+55.9% of the predictors explained the deviance in the model
+
+
+Okay, that's not what we want to do with SDM here. Let's transfer the probability of occurence to binary prediction
+
+
+### Model evaluation and validation
+
+Because we need to evaluate the prediction (of course if you write exam, you want to know how well you perform), so we need to set up evaluation dataset. The approach to do this (as in remote sensing) is to divide (randomly) the data into testing and training. So, let's set out 70% of our Mona monkey as training data and the remaining 30% for testing later. Lastly, we have selected linear function up there, so we are good to go and can fit different algorithms now.
+
+
+
+Split and train the model 
+
+```{r}
+
+
+# Use 70% for training data (of course you can change it and use 60 or 80% depending on you)
+
+train_data <- sample(seq_len(nrow(Mona_PA)), size=round(0.7*nrow(Mona_PA)))
+
+# Okay, let's subset the training & testing data
+
+Mona_train <- Mona_PA[train_data,]
+Mona_test <- Mona_PA[-train_data,]
+
+# If you want to store the split information for later use, use this code: 
+
+#write(train_data, file = "Mona_traindata.txt")
+
+#remember I said we can store other file than csv alone right?)
+
+
+```
+
+
+Using our GLM regression (but now on the training data) to evaluate how well it perform
+
+
+```{r}
+
+model_glm = step(glm(occ ~ bio4 + bio6 + bio15 + bio19, family=binomial(link=logit), data= Mona_train))
+
+summary(model_glm)
+
+```
+
+
+
+You may want to check the response curve
+
+```{r}
+
+my_preds = c("bio4", "bio6", "bio15", "bio19")
+
+preds_cv <- crossvalSDM(model_glm, traindat = Mona_train, colname_species = 'occ', colname_pred = my_preds)
+
+
+plot(model_glm$fitted.values, preds_cv, xlab='Fitted values', ylab='Predicted values from CV')
+abline(0,1,col='red',lwd=2)
+
+
+```
+
+
+Before we map the prediction, let's threshold the data (and try check the threshold independent metrics- AUC)
+
+Thresholding
+
+```{r}
+
+
+library(PresenceAbsence)
+
+
+# Cross-validated predictions:
+
+threshold_data <- data.frame(ID = seq_len(nrow(Mona_train)), obs = Mona_train$occ, pred = preds_cv)
+
+# Get the optimal thresholds:     
+(threshold_optimal <- PresenceAbsence::optimal.thresholds(DATA= threshold_data))
+
+
+
+```
+
+Good. You can now use any values above to threshold your species data to "presence" and "absence"
+
+
+```{r}
+# Threshold using the max sen+spec
+
+# Print the confusion Matrix
+
+(cmx_maxSSS <- PresenceAbsence::cmx(DATA= threshold_data, threshold=threshold_optimal[3,2]))
+
+```
+
+
+
+Let's compute AUC
+
+
+```{r}
+
+
+
+library(AUC)
+
+# Let's have a look a the ROC curve:
+roc_cv <- roc(preds_cv, as.factor(Mona_train$occ))
+plot(roc_cv, col = "grey70", lwd = 2)
+
+
+
+```
+
+Compute the AUC and other evaluation metrics:
+
+```{r}
+
+
+(evaluation_metrics = evalSDM(Mona_train$occ, preds_cv, thresh.method = "MaxSens+Spec"))
+
+
+```
+
+
+
+We can now validate the model performance on the test data
+
+```{r}
+
+
+(performance_glm <- evalSDM(Mona_test$occ, predict(model_glm, Mona_test[,my_preds], type='response'), thresh.method =  "MaxSens+Spec"))
+
+
+```
+
+
+Please note- 
+
+Sensitivity = true positive rate
+Specificity = true negative rate
+PCC = Proportion of correctly classified observations, 
+
+We can evaluate if the model is good or not with TSS (true skill statistics or Kappa). You can also chekc AUC (Area under the curve). You may ask which curve, the ROC curve- Receiver operating characteristics. 
+
+
+### Map prediction
+
+Now, let's check the Map prediction by plotting the main binary map with the data- 
+
+```{r}
+
+bio_clim_df_2 <- data.frame(rasterToPoints(clim_data[[my_preds]]))
+
+any(is.na(bio_clim_df_2))
+bio_clim_df_2<- na.omit(bio_clim_df_2)
+
+
+binary_glm <- predicted_glm <- rasterFromXYZ(cbind(bio_clim_df_2[,1:2],predict(model_glm, bio_clim_df_2, type='response')))
+values(binary_glm) <- ifelse(values(predicted_glm)>= performance_glm$thresh, 1, 0)
+plot(stack(predicted_glm, binary_glm),
+     xlim = c(min(-25),max (50)),
+     ylim = c(min(-40), max(40)),
+     main=c('Probability of Occurrence-Mona','Binary Prediction-Mona'), axes=F)  
+
+
+```
+
+
+Now, you can see the binary prediction of Mona Monkey throughout Africa.
+
+
+
+
+Great! We stopped here in class. I will update the book later as time permits (check back soon):
+
+1. Transfer this prediction to future (2050 or 2070)
+2. Use different model algorithms (random forest, boosted regression trees, etc)
+3. Ensemble the models (to account for model uncertainty) and lots more.
+
+
+If you have questions, feel free to ask email me or slack me. 
+
+
+
+
+
+
+
+
+
+
+<!--chapter:end:Chapter-6.Rmd-->
+
+
+# Model Diagnostics
+
+
+## Introduction
+
+## Model Assumptions
+
+## Checking Model Assumptions
+
+<!--chapter:end:Chapter-7.Rmd-->
+
+
+
+# Resources and References
+
+<!--chapter:end:Chapter-8.Rmd-->
+
