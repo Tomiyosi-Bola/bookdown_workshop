@@ -1,3 +1,9 @@
 
-# Resources and References
+# Model Diagnostics
 
+
+## Introduction
+
+## Model Assumptions
+
+## Checking Model Assumptions
